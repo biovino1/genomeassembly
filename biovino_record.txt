@@ -4,6 +4,9 @@
 # Genome Assembly Project
 #########################
 
+# Build singularity container
+singularity build --remote biovino.sif biovino_sing.def
+
 # Create directory 
 mkdir biovino_proj
 cd biovino_proj
