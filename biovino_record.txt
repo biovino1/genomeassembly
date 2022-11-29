@@ -1,0 +1,38 @@
+#########################
+# Ben Iovino
+# INFO-I 519
+# Genome Assembly Project
+#########################
+
+# Create directory 
+mkdir biovino_proj
+cd biovino_proj
+
+# Obtain data from NCBI
+curl -OJX GET "https://api.ncbi.nlm.nih.gov/datasets/v1/genome/accession/GCA_000516895.1/download?include_annotation_type=GENOME_GFF,RNA_FASTA,CDS_FASTA,PROT_FASTA&filename=GCA_000516895.1.zip" -H "Accept: application/zip"
+
+unzip GCA_000516895.1.zip
+cd ncbi_dataset/data/GCA_000516895.1
+seqkit sort --by-length --reverse --two-pass GCA_000516895.1_LocustGenomeV1_genomic.fna >> genome_sorted.fna
+
+# Using below command, you can see there are 29 contigs that are >= 80,000 bases in length
+# seqkit fx2tab --length genome_sorted.fna --name --only-id | more
+seqkit fx2tab genome_sorted.fna | head -n 29 > top_genome_sorted.fna
+
+# Ben Iovino is 7th student in alphabetical orde
+grep '>' genome_sorted.fna | head -n 7 | tail -n -1 > seqid.txt
+sed 's/>//g' seqid.txt > seqid_cl.txt
+seqkit grep -f seqid_cl.txt -n genome_sorted.fna -o contig.fa
+cp contig.fa ../../../
+
+# Generate random reads with 8th contig
+cd ../../../
+wgsim -e 0.01 -N 5000 -r 0.001 contig.fa r1.fq r2.fq
+
+# Assemble reads
+mv r1.fq ../
+mv r2.fq ../
+mkdir soap
+cd soap
+SOAPdenovo-63mer all -s ../biovino.config -o myasmb1 -p 1  1>log 2>err
+
