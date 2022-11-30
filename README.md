@@ -1,4 +1,8 @@
-This project is meant to run in a linux environment. All necessary tools are built into the singularity container, which can be built directly from the biovino_sing.def file. In order to build the container on a linux server, you have to create an access token https://cloud.sylabs.io/dashboard after making an account. If singularity is installed on the server, run
+This project is meant to run in a linux environment. All necessary tools are built into the singularity container, which can be built directly from the biovino_sing.def file. Clone this repository and change into the directory
+```
+cd genomeassembly/
+```
+In order to build the container on a linux server, you have to create an access token https://cloud.sylabs.io/dashboard after making an account. If singularity is already installed on the server, run
 ```
 module load singularity
 ```
