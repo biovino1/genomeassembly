@@ -28,7 +28,7 @@ sed 's/>//g' seqid.txt > seqid_cl.txt
 seqkit grep -f seqid_cl.txt -n genome_sorted.fna -o contig.fa
 cp contig.fa ../../../
 
-# Generate random reads with 8th contig
+# Generate random reads with 7th contig
 cd ../../../
 wgsim -e 0.01 -N 5000 -r 0.001 contig.fa r1.fq r2.fq
 
