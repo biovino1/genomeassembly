@@ -33,9 +33,9 @@ cd ../../../
 wgsim -e 0.01 -N 5000 -r 0.001 contig.fa r1.fq r2.fq
 
 # Assemble reads
-mv r1.fq ../
-mv r2.fq ../
-mkdir soap
+mmkdir soap
+mv r1.fq soap
+mv r2.fq soap
 cd soap
-SOAPdenovo-63mer all -s ../biovino.config -o myasmb1 -p 1  1>log 2>err
+SOAPdenovo-63mer all -s ../../biovino.config -o myasmb1 -p 1  1>log 2>err
 
