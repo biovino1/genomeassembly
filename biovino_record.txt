@@ -4,8 +4,11 @@
 # Genome Assembly Project
 #########################
 
-# Build singularity container
+# Build singularity container (IF ON A SERVER)
 singularity build --remote biovino.sif biovino_sing.def
+
+# Enter the shell
+singularity shell biovino.sif
 
 # Create directory 
 mkdir biovino_proj
@@ -33,9 +36,12 @@ cd ../../../
 wgsim -e 0.01 -N 5000 -r 0.001 contig.fa r1.fq r2.fq
 
 # Assemble reads
-mmkdir soap
+mkdir soap
 mv r1.fq soap
 mv r2.fq soap
 cd soap
 SOAPdenovo-63mer all -s ../../biovino.config -o myasmb1 -p 1  1>log 2>err
+
+# Exit shell
+singularity shell
 
