@@ -4,45 +4,62 @@
 # Genome Assembly Project
 #########################
 
-# Load singularity module and get .sif file from sylabs
+## Load singularity module and get .sif file from sylabs
 module load singularity
 singularity pull --arch amd64 library://biovino/genomeassembly/biovino.sif:latest
-mv 
-
-# Enter the shell
 singularity shell biovino.sif_latest.sif
 
-# Create directory 
+## Create directory 
 mkdir biovino_proj
 cd biovino_proj
 
-# Obtain data from NCBI
+## Obtain data from NCBI
 curl -OJX GET "https://api.ncbi.nlm.nih.gov/datasets/v1/genome/accession/GCA_000516895.1/download?include_annotation_type=GENOME_GFF,RNA_FASTA,CDS_FASTA,PROT_FASTA&filename=GCA_000516895.1.zip" -H "Accept: application/zip"
 
 unzip GCA_000516895.1.zip
 cd ncbi_dataset/data/GCA_000516895.1
 seqkit sort --by-length --reverse --two-pass GCA_000516895.1_LocustGenomeV1_genomic.fna >> genome_sorted.fna
 
-# Using below command, you can see there are 29 contigs that are >= 80,000 bases in length
-# seqkit fx2tab --length genome_sorted.fna --name --only-id | more
+## Using below command, you can see there are 29 contigs that are >= 80,000 bases in length
+## seqkit fx2tab --length genome_sorted.fna --name --only-id | more
 seqkit fx2tab genome_sorted.fna | head -n 29 > top_genome_sorted.fna
 
-# Ben Iovino is 7th student in alphabetical orde
+## Ben Iovino is 7th student in alphabetical orde
 grep '>' genome_sorted.fna | head -n 7 | tail -n -1 > seqid.txt
 sed 's/>//g' seqid.txt > seqid_cl.txt
 seqkit grep -f seqid_cl.txt -n genome_sorted.fna -o contig.fa
 cp contig.fa ../../../
 
-# Generate random reads with 7th contig
+## Generate random reads with 7th contig using wgsim default parameters
 cd ../../../
-wgsim -e 0.01 -N 5000 -r 0.001 contig.fa r1.fq r2.fq
+wgsim -e 0.02 -N 10000 -r 0.001 contig.fa r1.fq r2.fq
 
-# Assemble reads
-mkdir soap
-mv r1.fq soap
-mv r2.fq soap
+## Assemble reads - 1st iteration, default parameters
+mkdir soap results
+mv r1.fq r2.fq soap
 cd soap
-SOAPdenovo-63mer all -s ../../biovino.config -o myasmb1 -p 1  1>log 2>err
+SOAPdenovo-63mer all -s ../../biovino_pe.config -o myasmb1 -p 1  1>log 2>err
+mv myasmb1.scafStatistics ../results
+
+## Assemble reads - 2nd iteration, high error rates
+wgsim -e 0.1 -N 10000 -r 0.01 ../contig.fa r1.fq r2.fq
+SOAPdenovo-63mer all -s ../../biovino_pe.config -o myasmb2 -p 1  1>log 2>err
+mv myasmb2.scafStatistics ../results
+
+## Assemble reads - 3rd iteration, low number of reads
+wgsim -e 0.02 -N 1000 -r 0.001 ../contig.fa r1.fq r2.fq
+SOAPdenovo-63mer all -s ../../biovino_pe.config -o myasmb3 -p 1  1>log 2>err
+mv myasmb3.scafStatistics ../results
+
+## Assemble reads - 4th iteration, short reads
+wgsim -e 0.002 -N 10000 -1 30 -2 30 -r 0.001 ../contig.fa r1.fq r2.fq
+SOAPdenovo-63mer all -s ../../biovino_pe.config -o myasmb4 -p 1  1>log 2>err
+mv myasmb4.scafStatistics ../results
+
+## Assemble reads - 5th iteration, single end reads
+wgsim -e 0.02 -N 10000 -r 0.001 ../contig.fa r1.fq r2.fq
+SOAPdenovo-63mer all -s ../../biovino_se.config -o myasmb5 -p 1  1>log 2>err
+mv myasmb5.scafStatistics ../results
 
 # Exit shell
 singularity shell
