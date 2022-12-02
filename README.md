@@ -1,7 +1,7 @@
 **************************************************************************************************************
 # SIMULATING AND ASSEMBLING READS FROM A LOCUSTA MIGRATORY CONTIG
 **************************************************************************************************************
-This project simulates reads from the Locusta Migratory genome assembly using wgsim and assembles the reads using SOAPdenovo. Various parameters are tested to see their affect on the assembly. This project is meant to run on a linux server, for which you can simply clone this repository and execute the run_assembly.txt file while inside the 'genomeassembly' directory to reproduce all results. Singularity must already be installed on the server.
+This project simulates reads from the Locusta Migratory genome assembly using wgsim and assembles the reads using SOAPdenovo. Various parameters are tested to see their affect on the assembly. This project is meant to run on IU's Carbonate HPC, for which you can simply clone this repository and execute the run_assembly.txt file while inside the 'genomeassembly' directory to reproduce all results.
 
 run_assembly.txt loads the singularity module, downloads an already built singularity image from sylabs, and runs all of the commands located in biovino_record.txt from the singularity container which contains all of the necessary packages to reproduce the results found in this project.
 
