@@ -13,6 +13,7 @@ curl -OJX GET "https://api.ncbi.nlm.nih.gov/datasets/v1/genome/accession/GCA_000
 
 unzip GCA_000516895.1.zip
 cd ncbi_dataset/data/GCA_000516895.1
+echo 'gathering contig...'
 seqkit sort --by-length --reverse --two-pass GCA_000516895.1_LocustGenomeV1_genomic.fna >> genome_sorted.fna
 
 ## Using below command, you can see there are 29 contigs that are >= 80,000 bases in length
@@ -26,6 +27,7 @@ seqkit grep -f seqid_cl.txt -n genome_sorted.fna -o contig.fa
 cp contig.fa ../../../
 
 ## Generate random reads with 7th contig using wgsim default parameters
+echo 'simulating and assembling first iteration...'
 cd ../../../
 wgsim -e 0.02 -N 10000 -r 0.001 contig.fa r1.fq r2.fq
 
@@ -37,21 +39,27 @@ SOAPdenovo-63mer all -s ../../biovino_pe.config -o myasmb1 -p 1  1>log 2>err
 mv myasmb1.scafStatistics ../results
 
 ## Assemble reads - 2nd iteration, high error rates
+echo 'simulating and assembling second iteration...'
 wgsim -e 0.1 -N 10000 -r 0.01 ../contig.fa r1.fq r2.fq
 SOAPdenovo-63mer all -s ../../biovino_pe.config -o myasmb2 -p 1  1>log 2>err
 mv myasmb2.scafStatistics ../results
 
 ## Assemble reads - 3rd iteration, low number of reads
+echo 'simulating and assembling third iteration...'
 wgsim -e 0.02 -N 1000 -r 0.001 ../contig.fa r1.fq r2.fq
 SOAPdenovo-63mer all -s ../../biovino_pe.config -o myasmb3 -p 1  1>log 2>err
 mv myasmb3.scafStatistics ../results
 
 ## Assemble reads - 4th iteration, short reads
+echo 'simulating and assembling fourth iteration...'
 wgsim -e 0.002 -N 10000 -1 30 -2 30 -r 0.001 ../contig.fa r1.fq r2.fq
 SOAPdenovo-63mer all -s ../../biovino_pe.config -o myasmb4 -p 1  1>log 2>err
 mv myasmb4.scafStatistics ../results
 
 ## Assemble reads - 5th iteration, single end reads
+echo 'simulating and assembling fifth iteration...'
 wgsim -e 0.02 -N 10000 -r 0.001 ../contig.fa r1.fq r2.fq
 SOAPdenovo-63mer all -s ../../biovino_se.config -o myasmb5 -p 1  1>log 2>err
 mv myasmb5.scafStatistics ../results
+
+echo 'All done!'
