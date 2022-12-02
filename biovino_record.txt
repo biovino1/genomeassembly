@@ -55,7 +55,3 @@ mv myasmb4.scafStatistics ../results
 wgsim -e 0.02 -N 10000 -r 0.001 ../contig.fa r1.fq r2.fq
 SOAPdenovo-63mer all -s ../../biovino_se.config -o myasmb5 -p 1  1>log 2>err
 mv myasmb5.scafStatistics ../results
-
-# Exit shell
-singularity shell
-
