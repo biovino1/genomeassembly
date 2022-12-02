@@ -4,11 +4,6 @@
 # Genome Assembly Project
 #########################
 
-## Load singularity module and get .sif file from sylabs
-module load singularity
-singularity pull --arch amd64 library://biovino/genomeassembly/biovino.sif:latest
-singularity shell biovino.sif_latest.sif
-
 ## Create directory 
 mkdir biovino_proj
 cd biovino_proj
